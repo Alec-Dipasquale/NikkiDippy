@@ -1,0 +1,25 @@
+<html>
+<head>
+  <title>Nikki Dippy's Designs - Delete Product</title>
+</head>
+
+<body>
+  <h1>Nikki Dippy's Designs - Delete Product</h1>
+
+  <form action="delete_product.php" method="post">
+    Choose Delete by Type:<br />
+    <select name="delete_type">
+      <option value="name">name
+      <option value="product_id">product id
+    </select>
+    <br />
+    Enter what you want to delete:<br />
+    <input name="delete_term" type="text" size="40">
+    <br />
+    <input type="submit" name="submit" value="Delete">
+  </form>
+  <a href="main_page.php">
+        <button type="submit">Home</button>
+    </a>
+</body>
+</html>

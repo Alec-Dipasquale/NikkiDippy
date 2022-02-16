@@ -1,0 +1,40 @@
+<html>
+<head>
+  <title>Nikki Dippy's Designs - New Product Entry</title>
+</head>
+
+<body>
+  <h1>Nikki Dippy's Designs - New Product Entry</h1>
+
+  <form action="insert_product.php" method="post" enctype="multipart/form-data" class="frmImageUpload">
+    <table border="0">
+      <tr>
+        <td>product name</td>
+         <td><input type="text" name="product_name" maxlength="30" size="30"></td>
+      </tr>
+      <tr>
+        <td>product description</td>
+        <td> <input type="text" name="product_description" maxlength="510" size="30"></td>
+      </tr>
+      <tr>
+        <td>price</td>
+        <td> <input type="text" name="price" maxlength="510" size="30"></td>
+      </tr>
+      <tr>
+        <td>quantity</td>
+        <td> <input type="text" name="quantity" maxlength="5" size="5"></td>
+      </tr>
+      <tr>
+        <td>Image</td>
+        <td> <input type="file" class="inputFile" name="image_file" id="image_file"></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="submit" value="Register" value="Upload"></td>
+      </tr>
+    </table>
+  </form>
+  <a href="main_page.php">
+        <button type="submit">Home</button>
+    </a>
+</body>
+</html>
