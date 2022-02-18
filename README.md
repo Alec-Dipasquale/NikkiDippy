@@ -1,7 +1,7 @@
 # NikkiDippy
- Catalog website for graphic design products
+ Catalog website for various products such as apparel, accessories, and illustrations created for a local talented graphic designer.
 
-#Products Page
+# Products Page
 This page displays Nikki's full catalog of available products stored in the database with search functionality
 Displayed:
  * Individual product cards with price, title and view button (if Hovered)
