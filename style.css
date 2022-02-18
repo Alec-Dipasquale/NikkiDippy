@@ -2,11 +2,12 @@
 
 .top_nav {
     overflow: hidden;
-    background-color: #000;
     padding-left: 15px;
+    background-color: #857085;
 }
 
 .top_nav a {
+    background-color: black;
     float: left;
     color: #f2f2f2;
     text-align: center;
@@ -33,91 +34,6 @@
     padding-right: 15px;
     text-align: center;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-
-
-/*
-For Login/Registration Form Page
-*/
-
-.credentialLabel {
-    font-family: arial;
-}
-
-.credentialInformation {
-    max-width: 700px;
-    padding-top: 25px;
-    padding-bottom: 25px;
-    padding: 15px;
-    margin: auto;
-    margin-top: 80px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    background-color: #f2f2f2;
-}
-
-.credentialInput {
-    padding: 5px;
-    width: 100%;
-    font-family: arial;
-}
-
-.credentialInput:hover {
-    font-family: arial;
-    border: 2px solid orangered;
-}
-
-.credentialLabel {
-    font-family: arial;
-    text-align: left;
-}
-
-.credentialButton {
-    text-align: center;
-    padding: 5px;
-    font-family: arial;
-    margin: 5px;
-    margin-left: 25%;
-    margin-right: 25%;
-    width: 50%;
-    background-color: white;
-    color: black;
-    border: 2px solid #555555;
-}
-
-.credentialButton:hover {
-    font-family: arial;
-    background-color: gray
-}
-
-.credentialFormContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-}
-
-input[type=submit] {
-    border: 1 solid white;
-    outline: 0;
-    padding: 12px;
-    color: white;
-    background-color: #000;
-    text-align: center;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-button {
-    border: 1 solid white;
-    outline: 0;
-    padding: 12px;
-    color: white;
-    background-color: #000;
-    text-align: center;
-    cursor: pointer;
-    width: 100%;
-    font-size: 18px;
 }
 
 .div_main_title {
@@ -148,54 +64,17 @@ button {
 }
 
 .results {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     margin: auto;
     text-align: center;
     font-family: arial;
     overflow: hidden;
     white-space: nowrap;
-    width: 30%;
     padding: 15px;
-    line-height: 1.5;
+    line-height: 1;
 }
 
-.card {
-    background-color: rgb(202, 202, 202);
-    margin-left: 15px;
-    margin-right: 15px;
-    align-items: center;
-    text-align: center;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    width: 350px;
-    line-height: 1.5;
-}
-
-.card h1 {
-    font-size: 20px;
-    border: 2px solid gray;
-}
-
-.card Button {
-    padding: 12px;
-    border: 1 solid white;
-    outline: 0;
-    color: white;
-    background-color: #000;
-    text-align: center;
-    cursor: pointer;
-    width: 100%;
-    font-size: 18px;
-}
-
-.card Button:hover {
-    opacity: 0.5;
-}
-
-.card img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 95%;
+.results p {
+    font-size: 14px;
 }
 
 .table_style {
@@ -234,4 +113,39 @@ button {
     text-align: center;
     border: 1 solid white;
     margin: 20px;
+}
+
+
+/* For grid layout */
+
+.item1 {
+    grid-area: header;
+}
+
+.item2 {
+    grid-area: menu;
+}
+
+.item3 {
+    grid-area: main;
+}
+
+.item5 {
+    grid-area: footer;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-areas: 'header header header header header header' 'menu main main main main main' 'menu footer footer footer footer footer';
+    gap: 10px;
+    background-color: #e8cde8;
+    padding: 10px;
+    text-align: center;
+}
+
+.grid-container>div {
+    background-color: rgba(255, 255, 255, 0.878);
+    text-align: center;
+    padding: 20px 0;
+    font-size: 30px;
 }

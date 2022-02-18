@@ -8,6 +8,7 @@ $description = "Landing Page Description";
 do_html_header($title, $header, $description);
 
 ?>
+
 <body>
 <div class="credentialInformation">
     <form method="post" action="registration_verification.php">

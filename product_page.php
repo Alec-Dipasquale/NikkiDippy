@@ -53,19 +53,21 @@ $num_results = $result->num_rows;
                 echo "Cart updated";
             }
         } else{
-            if(isset($_SESSION['cart'])){
-                array_push($_SESSION['cart'],array( $product_id, $quantity ));
-                echo "Cart updated";
+            if(isset($_SESSION['cart_array'])){
+                $_SESSION['cart_array'][$product_id] = array('product_id' => $product_id, 'quantity' => $quantity);
+                // debug_to_console("Added product_id: ". $product_id ." quantity: ".$quantity." to cart_array in Session: ". print_r($_SESSION['cart_array']));
             }
             else{
-                $_SESSION['cart'] = array (
-                    array( $product_id, $quantity )
+                $_SESSION['cart_array'] = array (
+                    array('product_id' => $product_id,'quantity' => $quantity)
                 );
                 echo "Cart started";
             }
         }
         
         echo "</h1>";
+
+        header("location:cart.php");
 
         }
 
@@ -106,16 +108,13 @@ $num_results = $result->num_rows;
 ?>
         <form method="post"> 
                 <?php 
-                echo '<input style="font-size:25px;width:5%" type="number" name="quantity" min=1 max ='.$in_stock.'>';
+                echo '<input style="font-size:25px;width:5%" type="number" name="quantity" value=1 min=1 max ='.$in_stock.'>';
                 if(isset($_SESSION['username'])){
                     echo '<input type="hidden" name="username" value='.$username.'>';
                 }
                 echo '<input type="hidden" name="product_id" value= '.$product_id.'>';
                 ?>
-                <input style="width:13%;" type="submit" name="add_to_cart" value="Add To Cart"/> 
-        </form> 
-        <form method="post" action="main_page.php">
-            <input style="width:20%" type="submit" name="home" value = "Home"/>
+                <input style="width:13%;" type="submit" name="add_to_cart" value="Add To Cart"/>
         </form>
             
             <?php

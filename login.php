@@ -8,6 +8,9 @@ $description = "Landing Page Description";
 do_html_header($title, $header, $description);
 
 ?>
+<header>
+    <link href="credentials.css" rel="stylesheet" type="text/css">
+</header>
 <body>
 
     <div class="credentialInformation">

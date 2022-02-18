@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once('Nikki_fns.php');
+require_once('cart_fns.php');
 $db = db_connect();
 
 $title = "Nikki's Cart Page";
@@ -14,17 +15,21 @@ if(isset($_SESSION['username'])) {
     $result = $db->query($query_for_cart);
     $num_results = $result->num_rows;
 }
-if(isset($_POST['delete'])){
+
+if(isset($_POST['delete'] )){
     if(isset($username)){
-        $query_cart_item_delete = "delete from cart_items where cart_item_id = ".$_POST['cart_item_id'];
+        $query_cart_item_delete = "DELETE FROM cart_items WHERE product_id = ".$_POST['cart_index']." AND username = '".$username."'";
+        debug_to_console("query_cart_item_delete: " . $query_cart_item_delete);
+
         $delete_result= $db->query($query_cart_item_delete);
         if($delete_result){
-            echo "<p>Item deleted from cart</p>";
+            header("Refresh:1");
         } else{
             echo "<p>Error deleting from cart</p>";
         }
     } else{
-        unset($_SESSION['cart'][$_POST['cart_index']]);
+        unset($_SESSION['cart_array'][$_POST['cart_index']]);
+        header("Refresh:1");
     }
 
 }
@@ -35,54 +40,9 @@ if(isset($_POST['delete'])){
 
 ?>
 <html>
-    <style>
-        table, th, td {
-          border: 1px solid black;
-          text-align: center;
-          min-width: 100px;
-        }
-        input[type=submit]{
-            border: 1 solid white;
-            outline: 0;
-            padding: 12px;
-            color: white;
-            background-color: #000;
-            text-align: center;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        .container {
-          max-height: 300px;
-        }
-        .center {
-          margin: 0;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          -ms-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-        }
-        .vertical-center {
-          margin: 0;
-          position: absolute;
-          top: 50%;
-          -ms-transform: translateY(-50%);
-          transform: translateY(-50%);
-        }
-        .cart {
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-            max-width: 750px;
-            margin: auto;
-            text-align: center;
-            font-family: arial;
-            overflow:hidden;
-            white-space: nowrap;
-            padding: 15px;
-            line-height: 1.5;
-
-        }
-    </style>
-
+    <header>
+        <link href="credentials.css" rel="stylesheet" type="text/css">
+    </header>
 <body>
 <div class="cart">
     <table>
@@ -97,40 +57,23 @@ if(isset($_POST['delete'])){
             <tbody>
                 
                <?php
+               
+               $subtotal = 0;
+               $total = 0;
                if(isset($username)){
                     $query = "select * from cart_items where username = '".$username."'";
                     $result = $db->query($query);
                     $num_results = $result->num_rows;
-                    $subtotal = 0;
-                    $total = 0;
+
                     for ($i=0; $i <$num_results; $i++) {
                         $row = $result->fetch_assoc();
-                        $product_query = "SELECT * FROM products WHERE product_id like '%".stripslashes($row['product_id'])."%'";
-                        $product = $db->query($product_query);
-                        for($j = 0; $j <  1;$j++){
-                            $product_row = $product->fetch_assoc();
-                            $item_price = $product_row['price'];
-                            $item_quantity = $row['quantity'];
-                            $item_total=$item_price * $item_quantity;
-                            $subtotal = $subtotal + $item_total;
-                            
-                            echo "<tr><td><img src='data:image/jpg;base64,".base64_encode( $product_row["img"] )."' style='max-width:100px;'/></td>";
-                            echo "<td>".$product_row['name']."</td>";
-                            echo "<td>$".$item_price."</td>";
-                            echo "<td><a>".$item_quantity."</a></td>";
-                            echo "<td>$".$item_total."</td>";
-                            echo "<td style='border:0px;'><form method='post'>
-                            <input type='hidden' name='cart_item_id' value='".htmlspecialchars(stripslashes($row['cart_item_id']))."'/>
-                            <input type='submit' name='delete' value= 'remove'/></form></td>";
-                            echo "</tr>";
-                        }
+
+                        $item_total = do_check_out_item($row, $db);
+                        
+                        $subtotal = $subtotal + $item_total;      
+                        
                     }
-                    $tax_rate = .07;
-                    echo "<td colspan ='4'>subtotal</td><td>".$subtotal."</td></tr>";
-                    $tax = number_format($subtotal * $tax_rate,2);
-                    echo "<td colspan ='4'>tax</td><td>".$tax."</td></tr>";
-                    $total = number_format($subtotal + $tax,2);
-                    echo "<td colspan ='4'>total</td><td>".$total;
+                    do_check_out_totals($subtotal);
                 ?>
                 </td></tr></table>
                 <form action = 'receipt.php' method='post'>
@@ -144,35 +87,29 @@ if(isset($_POST['delete'])){
                     
                     <?php
                }else{
-                   if(isset($_SESSION['cart'])){
-                        $cart_arr = $_SESSION['cart'];
-                        for ($i=0; $i <count($cart_arr); $i++) {
-                            $product_query = "SELECT * FROM products WHERE product_id like '%".$cart_arr[$i][0]."%'";
-                            $product = $db->query($product_query);
-                            for($j = 0; $j <  1;$j++){
+                   if(isset($_SESSION['cart_array'])){
+                        reset($_SESSION['cart_array']);
+                        $currentArray = current($_SESSION['cart_array']);
+                        for($i=0; $i < count($_SESSION['cart_array']); $i++) {
+                        
+                            if(isset($currentArray)){
+                                $product_query = "SELECT * FROM products WHERE product_id like '%".$currentArray['product_id']."%'";
+                                $product = $db->query($product_query);
                                 $product_row = $product->fetch_assoc();
+                                
                                 $item_price = $product_row['price'];
-                                $item_quantity = $cart_arr[$i][1];
+                                $item_quantity = $currentArray['quantity'];
                                 $item_total=$item_price * $item_quantity;
                                 $subtotal = $subtotal + $item_total;
+                                $product_img = base64_encode( $product_row["img"] );
+                                $product_id = $currentArray['product_id'];
                                 
-                                echo "<tr><td><img src='data:image/jpg;base64,".base64_encode( $product_row["img"] )."' style='max-width:100px;'/></td>";
-                                echo "<td>".$product_row['name']."</td>";
-                                echo "<td>$".$item_price."</td>";
-                                echo "<td><a>".$item_quantity."</a></td>";
-                                echo "<td>$".$item_total."</td>";
-                                echo "<td style='border:0px;'><form method='post'>
-                                <input type='hidden' name='cart_index' value='".$i."'/>
-                                <input type='submit' name='delete' value= 'remove'/></form></td>";
-                                echo "</tr>";
+                                do_check_out($product_row, $item_price, $item_quantity, $item_total, $product_id, $product_img);
                             }
+
+                            $currentArray = next($_SESSION['cart_array']);
                         }
-                        $tax_rate = .07;
-                        echo "<td colspan ='4'>subtotal</td><td>".$subtotal."</td></tr>";
-                        $tax = number_format($subtotal * $tax_rate,2);
-                        echo "<td colspan ='4'>tax</td><td>".$tax."</td></tr>";
-                        $total = number_format($subtotal + $tax,2);
-                        echo "<td colspan ='4'>total</td><td>".$total;
+                        do_check_out_totals($subtotal);
                    }
                }
                 
