@@ -5,7 +5,7 @@ $title = "Nikki Register";
 $header = "Register";
 $description = "Landing Page Description";
 
-do_html_header($title, $header, $description);
+doHtmlHeader($title, $header, $description);
 
 ?>
 

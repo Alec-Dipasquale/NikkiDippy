@@ -6,13 +6,13 @@ $db = db_connect();
 $title = "Nikki's Product Page";
 $mainHeader= "Product Page";
 $mainDescription = "This is a catalog of all of Nikki's current products.";
-do_html_header($title, $mainHeader, $mainDescription);
+doHtmlHeader($title, $mainHeader, $mainDescription);
 
 if(isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 }
 
-if(isset($_POST['product_id'])){
+if (isset($_POST['product_id'])) {
 $product_id = $_POST['product_id'];
 $query_product = "SELECT * FROM products WHERE product_id LIKE '%".$product_id."%'";
 $result = $db->query($query_product);

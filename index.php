@@ -7,11 +7,11 @@ $title = "Nikki Index";
 $header = "Home";
 $description = "Landing Page Description";
 
-do_html_header($title, $header, $description);
+doHtmlHeader($title, $header, $description);
 
-do_about_me();
+doAboutMe();
 
-do_html_footer();
+doHtmlFooter();
 
 
 ?>

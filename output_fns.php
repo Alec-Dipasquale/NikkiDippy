@@ -1,9 +1,9 @@
 <?php
-function do_html_header($title, $header, $description) {
+function doHtmlHeader($title, $header, $description) {
     ?>
     <html>
         <head>
-        <title><?php echo $title;?></title>
+            <title><?php echo $title;?></title>
             <link href="style.css" rel="stylesheet" type="text/css">
         </head>
         <body>
@@ -24,23 +24,22 @@ function do_html_header($title, $header, $description) {
                         <?php 
                     
 
-                        if(isset(($_SESSION['username']))){   
-                        $priv = strcmp($_SESSION['type'], 'Owner');
-                        if($priv == 0){ 
-                            echo '<a href="admin_page.php">Admin</a>';
-                            // echo '<a href="playground.php">Playground</a>';
+                        if (isset(($_SESSION['username']))) {   
+                            $priv = strcmp($_SESSION['type'], 'Owner');
+                            if ($priv == 0) { 
+                                echo '<a href="admin_page.php">Admin</a>';
+                                // echo '<a href="playground.php">Playground</a>';
+                            }
+                            echo '<a href="logout.php">Log Out</a>';
+                        } else {
+                                echo '<a href="login.php">Log In</a>';
+                                echo '<a href="register.php">Register</a>';
+                                // echo '<a href="playground.php">Playground</a>';
                         }
-                        echo '<a href="logout.php">Log Out</a>';
-                        } 
-                        else{
-                            echo '<a href="login.php">Log In</a>';
-                            echo '<a href="register.php">Register</a>';
-                            // echo '<a href="playground.php">Playground</a>';
-                        }
-                        if(!isset(($_SESSION['cart_array']))){
+                        if (!isset(($_SESSION['cart_array']))) {
                             $_SESSION['cart_array'] = array ();
-                            debug_to_console("initialized cart_array in Session: " . print_r($_SESSION['cart_array']));
-                    }
+                            debugToConsole("initialized cart_array in Session: " . print_r($_SESSION['cart_array']));
+                        }
                         ?>
                     </div>
                 <div class="page_title">
@@ -48,32 +47,42 @@ function do_html_header($title, $header, $description) {
                 </div>
             </div>
                 <?php
-}       
+}    
 
-function do_html_footer(){
+/** 
+ * Function for outputting footer on all pages.
+ * 
+ * @return void
+ * */ 
+function doHtmlFooter() 
+{
   
-  // print an HTML footer
-  ?>
+    ?>
   
   </body>
   </html>
-<?php 
+    <?php 
 }
-
-function do_admin_section(){
-    if(isset(($_SESSION['type']))){
-        if($_SESSION['type'] == "Owner" || $_SESSION['type'] == 'Manager' ||$_SESSION['type'] == 'Employee'){
+/** 
+ * Function for outputting footer on all pages.
+ * 
+ * @return void
+ * */ 
+function doAdminSection()
+{
+    if (isset(($_SESSION['type']))) {
+        if ($_SESSION['type'] == "Owner" || $_SESSION['type'] == 'Manager' ||$_SESSION['type'] == 'Employee') {
             echo '<div style = "border:1px solid black; padding: 5px;">';
             echo '<h1>Admin Section</h1>';
             echo '<form method="post" action="check_receipts.php">
             <input style="width: 100%;" type="submit" name="check_all_orders" value = "Check All Orders"/></form>';  
             
-            if($_SESSION['type'] == "Owner" || $_SESSION['type'] == 'Manager'){
+            if ($_SESSION['type'] == "Owner" || $_SESSION['type'] == 'Manager') {
                 echo '<a href="insert.html" style="padding: 5px;">
                 <button type="submit">Insert Product</button>
                 </a>';
                 
-                if($_SESSION['type'] == "Owner"){
+                if ($_SESSION['type'] == "Owner") {
                     echo '<a href="delete_product.html" style="padding: 5px;">
                     <button type="submit">Delete Product</button>
                     </a></div>'; 
@@ -83,8 +92,14 @@ function do_admin_section(){
     }
 }
 
-function side_cart(){
-?>
+/** 
+ * Function for outputting footer on all pages.
+ * 
+ * @return void
+ * */ 
+function sideCart()
+{
+    ?>
 <header>
    <!-- logo and menu here -->
    <div id="cd-cart-trigger"><a class="cd-img-replace" href="#0">Cart</a></div>
@@ -116,21 +131,27 @@ function side_cart(){
 
    <p class="cd-go-to-cart"><a href="#0">Go to cart page</a></p>
 </div> <!-- cd-cart -->
-<?php
+    <?php
 }
-
-function do_catalog_nav(){
+/** 
+ * Function for outputting footer on all pages.
+ * 
+ * @return void
+ * */ 
+function doCatalogNav()
+{
     $db = db_connect();
     $query = "select * from products";
-    if(isset($_POST['search']) && isset($_POST['searchterm'])) {
+    if (isset($_POST['search']) && isset($_POST['search_term'])) {
 
-        $searchterm = $_POST['searchterm'];
+        $search_term = $_POST['search_term'];
         $query = "select * from products 
-        where (product_id like '%".$searchterm."%' OR 
-        name like '%".$searchterm."%' OR 
-        description like '%".$searchterm."%')";
+        where (product_id like '%".$search_term."%' OR 
+        name like '%".$search_term."%' OR 
+        description like '%".$search_term."%')";
+        $_SESSION['search_term'] = $search_term;
     }
-    if(isset($_POST['show_all'])) {
+    if (isset($_POST['show_all'])) {
         $query = "select * from products";
     }
 
@@ -139,7 +160,7 @@ function do_catalog_nav(){
     $num_results = $result->num_rows;
     echo '<div class="results">';
     echo "<form method='post' action='catalog.php'>
-                    <input type='text' name='searchterm' />
+                    <input type='text' name='search_term' />
                     <input type='submit' name='search' value = 'search'/>
                     <input type='submit' name='show_all' value = 'Full Catalog'/>
                 </form>";
@@ -149,41 +170,81 @@ function do_catalog_nav(){
     
     $db->close();
 }
-
-function do_catalog_products($result){
+/** 
+ * Function for outputting footer on all pages.
+ * $result will contain a promise 
+ * $count will contain the number of results 
+ * 
+ * @return void
+ * */ 
+function doCatalogProducts($result, $max_product_rows,  $max_product_columns) {
     $num_results = $result->num_rows;
+    if (isset($_SESSION['search_term'])) {
+        echo "<p>Search Term: ".$_SESSION['search_term']."</p>";
+    }
+    $count = 0;
+    if(isset($_SESSION['catalog_product_count'])){
+        $count = $_SESSION['catalog_product_count'];
+    }
     echo "<p>Search Results: ".$num_results."</p>";
 
     echo '<div class= "outer_table_style"><div class="table_style">';
     echo '<table style="width:100%">';
-    $count = 0;
-    $max_product_rows = 5;
-    $max_product_columns = 3;
+    
+    $max_product_count = $max_product_rows * $max_product_columns;
     $row = array();
+    
     for ($i=0; $i <$num_results; $i++) {
         $row[$i] = $result->fetch_assoc();
     }
 
-    for($i = 0; $i<$max_product_rows; $i++){
+    for ($i = 0; $i<$max_product_rows; $i++) {
         echo '<tr>';
-        for($j=0; $j <$max_product_columns; $j++){ 
-            if($i >= $num_results){
+        for ($j=0; $j <$max_product_columns; $j++) { 
+            if ($count >= $num_results) {
                 break;
             }
             echo '<td>';
-            do_catalog_card($row[$count]);
+            doCatalogCard($row[$count]);
             $count++;
             echo '</td>';
 
         }    
+        if ($count >= $num_results) {
+            break;
+        }
         echo '</tr>';
     }
 
-    echo'</table></div></div>';
+    debugToConsole(strval("product index: ".$count));
+    debugToConsole("catalog_product_count: ".$_SESSION['catalog_product_count']);
+    debugToConsole("result count: ".$result->num_rows);
+
+    echo "<head>
+            <link href='style.css' rel='stylesheet' type='text/css'/>
+        </head>";
+    echo'</table></div></div>   <div><span class="dot"></span></div>';
+    echo "<form method='POST' action='catalogFunctions.php'>";
+    echo "<input type='hidden' name='maxProductCount' value ='".$max_product_count."'/>";
+    if ($count > $max_product_count) {
+        echo "<input type='image' name='backButton' src='icons8-back-96.png' alt='submit' width='48' height='48'/>";
+    }
+    echo ($_SESSION['catalog_product_count'] + 1). " ... ". $count;
+    if ($_SESSION['catalog_product_count'] < ($result->num_rows - $max_product_count)) {
+        echo "<input type='image' name='forwardButton' src='icons8-forward-96.png' alt='submit' width='48' height='48'/>";
+    }
+
+    echo "</form>"; 
     
 }
 
-function do_catalog_card($product_info){
+/** 
+ * Function for outputting footer on all pages.
+ * 
+ * @return void
+ * */ 
+function doCatalogCard($product_info)
+{
     $product_img = base64_encode( $product_info['img'] );
     $product_name =  htmlspecialchars(stripslashes($product_info["name"]));
     $product_stock = htmlspecialchars(stripslashes($product_info["quantity"]));
@@ -224,13 +285,6 @@ function do_catalog_card($product_info){
                             </button>
                         </a>
                     </form>
-
-                    <!-- <a class="product_view" href="#">
-                        <span class="price"><?php echo $product_price?></span>
-                        <span class="view_product">
-                        <span class="txt">View Product (<?php echo $product_stock?>)</span>
-                        </span>
-                    </a> -->
                     </div>
                 </div>
                 </div>
@@ -240,7 +294,7 @@ function do_catalog_card($product_info){
             <?php
 }
 
-function do_about_me(){
+function doAboutMe(){
     ?>
     <div class="about_me">
         <h1>About me!</h1>
@@ -259,20 +313,11 @@ Elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristi
 }
 
 
-function debug_to_console($data) {
+function debugToConsole($data) {
     $output = $data;
     if (is_array($output))
         $output = implode(',', $output);
 
     echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
 }
-
-function do_check_out_totals($subtotal){
-    $tax_rate = .07;
-    echo "<td colspan ='4'>subtotal</td><td>".$subtotal."</td></tr>";
-    $tax = number_format($subtotal * $tax_rate,2);
-    echo "<td colspan ='4'>tax</td><td>".$tax."</td></tr>";
-    $total = number_format($subtotal + $tax,2);
-    echo "<td colspan ='4'>total</td><td>".$total;
-    
-}
+?>

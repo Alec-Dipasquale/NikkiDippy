@@ -149,3 +149,13 @@
     padding: 20px 0;
     font-size: 30px;
 }
+
+
+/* For the Arrow keys */
+
+.circle {
+    background: #f00;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
